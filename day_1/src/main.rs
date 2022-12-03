@@ -1,6 +1,13 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+fn file_to_string(path: &str) -> String {
+  let mut file = File::open("inputs/input").unwrap();
+  let mut contents = String::new();
+  file.read_to_string(&mut contents).unwrap();
+  contents
+}
+
 fn main() -> std::io::Result<()> {
   print!("part 1: {}\n", part_1());
   print!("part 2: {}\n", part_2());
@@ -9,10 +16,8 @@ fn main() -> std::io::Result<()> {
 
 fn part_1() -> i32 {
   let mut res = 0;
-  let mut file = File::open("inputs/input").unwrap();
-  let mut contents = String::new();
-  file.read_to_string(&mut contents).unwrap();
-  for e in contents.split("\n\n") {
+  let input = file_to_string("inputs/input");
+  for e in input.split("\n\n") {
     let candidate = get_calories(e.to_string());
     if candidate > res { 
       res = candidate;
@@ -24,10 +29,8 @@ fn part_1() -> i32 {
 
 fn part_2() -> i32 {
   let mut res = vec![];
-  let mut file = File::open("inputs/input").unwrap();
-  let mut contents = String::new();
-  file.read_to_string(&mut contents).unwrap();
-  for e in contents.split("\n\n") {
+  let input = file_to_string("inputs/input");
+  for e in input.split("\n\n") {
     res.push(get_calories(e.to_string()));
   }
 
