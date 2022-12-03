@@ -26,12 +26,42 @@ fn main() {
     println!("part 2: {}", part_2());
 }
 
-fn part_1() -> i32 {
-    0
+fn part_1() -> u32 {
+    let mut res = 0;
+    for line in file_to_string("inputs/input").split("\n") {
+        match Rucksack::from(line).get_shared() {
+            Some (shared_item) => res += char_to_score(shared_item),
+            None => panic!("no shared item in rucksack: {}",line),
+        }
+    }
+    res
 }
 
 fn part_2() -> i32 {
     0
+}
+
+struct Rucksack {
+    left: String,
+    right: String,
+}
+
+impl Rucksack {
+    fn from(input: &str) -> Rucksack {
+        let midpoint = input.len()/2;
+        Rucksack {
+            left:  String::from(input.get(0..midpoint).unwrap()),
+            right: String::from(input.get(midpoint..).unwrap()),
+        }
+    }
+    fn get_shared(&self) -> Option<char> {
+        for e in self.left.chars() {
+            if self.right.contains(e) {
+                return Some(e)
+            }
+        }
+        None
+    }
 }
 
 
@@ -51,5 +81,36 @@ mod test {
         assert_eq!(char_to_score('t'), 20);
     }
 
+    #[test]
+    fn split_rucksack() {
+        let test = Rucksack::from("vJrwpWtwJgWrhcsFMMfFFhFp");
+
+        assert_eq!(test.left,  String::from("vJrwpWtwJgWr"));
+        assert_eq!(test.right, String::from("hcsFMMfFFhFp"));
+
+        let test2 = Rucksack::from("jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL");
+        assert_eq!(test2.left,  String::from("jqHRNqRjqzjGDLGL"));
+        assert_eq!(test2.right, String::from("rsFMfFZSrLrFZsSL"));
+    }
+
+    #[test]
+    fn diff_compartments() {
+        let test = Rucksack::from("vJrwpWtwJgWrhcsFMMfFFhFp");
+        let test2 = Rucksack::from("jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL");
+        assert_eq!(test.get_shared(),Some('p'));
+        assert_eq!(test2.get_shared(),Some('L'));
+    }
+
+    #[test]
+    fn test_part_1() {
+        let mut res = 0;
+        for line in file_to_string("inputs/demo").split("\n") {
+            match Rucksack::from(line).get_shared() {
+                Some (shared_item) => res += char_to_score(shared_item),
+                None => panic!("no shared item in rucksack: {}",line),
+            }
+        }
+        assert_eq!(res,157);
+    }
     
 }
