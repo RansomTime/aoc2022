@@ -9,8 +9,6 @@ fn file_to_string(path: &str) -> String {
   contents
 }
 
-
-
 fn char_to_score(input: char) -> u32 {
   // convert using ordinal value, panic if not given [A-Za-z]
   match input {
@@ -19,7 +17,6 @@ fn char_to_score(input: char) -> u32 {
     _ => panic!("char_to_score({}) expected [a-zA-Z]",input),
   }
 }
-
 
 fn main() {
   println!("part 1: {}", part_1());
@@ -55,23 +52,29 @@ fn part_2() -> u32 {
 }
 
 struct Rucksack {
-  left: String,
-  right: String,
-  full: String,
+  contents: String,
 }
 
 impl Rucksack {
   fn from(input: &str) -> Rucksack {
-    let midpoint = input.len()/2;
     Rucksack {
-      left:  String::from(input.get(0..midpoint).unwrap()),
-      right: String::from(input.get(midpoint..).unwrap()),
-      full: String::from(input),
+      contents: String::from(input),
     }
   }
+
+  fn get_left(&self) -> String {
+    let midpoint = self.contents.len()/2;
+    String::from(self.contents.get(0..midpoint).unwrap())
+  }
+
+  fn get_right(&self) -> String {
+    let midpoint = self.contents.len()/2;
+    String::from(self.contents.get(midpoint..).unwrap())
+  }
+
   fn get_shared(&self) -> Option<char> {
-    for e in self.left.chars() {
-      if self.right.contains(e) {
+    for e in self.get_left().chars() {
+      if self.get_right().contains(e) {
         return Some(e)
       }
     }
@@ -79,8 +82,8 @@ impl Rucksack {
   }
   
   fn get_group_badge(first: Rucksack, second: Rucksack, third: Rucksack) -> Option <char> {
-    for e in first.full.chars() {
-      if second.full.contains(e) && third.full.contains(e) {
+    for e in first.contents.chars() {
+      if second.contents.contains(e) && third.contents.contains(e) {
         return Some(e)
       }
     }
@@ -109,12 +112,12 @@ mod test {
   fn split_rucksack() {
     let test = Rucksack::from("vJrwpWtwJgWrhcsFMMfFFhFp");
     
-    assert_eq!(test.left,  String::from("vJrwpWtwJgWr"));
-    assert_eq!(test.right, String::from("hcsFMMfFFhFp"));
+    assert_eq!(test.get_left(),  String::from("vJrwpWtwJgWr"));
+    assert_eq!(test.get_right(), String::from("hcsFMMfFFhFp"));
     
     let test2 = Rucksack::from("jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL");
-    assert_eq!(test2.left,  String::from("jqHRNqRjqzjGDLGL"));
-    assert_eq!(test2.right, String::from("rsFMfFZSrLrFZsSL"));
+    assert_eq!(test2.get_left(),  String::from("jqHRNqRjqzjGDLGL"));
+    assert_eq!(test2.get_right(), String::from("rsFMfFZSrLrFZsSL"));
   }
   
   #[test]
