@@ -1,16 +1,17 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+
 fn file_to_string(path: &str) -> String {
-  let mut file = File::open("inputs/input").unwrap();
+  let mut file = File::open(path).unwrap();
   let mut contents = String::new();
   file.read_to_string(&mut contents).unwrap();
   contents
 }
 
 fn main() -> std::io::Result<()> {
-  print!("part 1: {}\n", part_1());
-  print!("part 2: {}\n", part_2());
+  println!("part 1: {}", part_1());
+  println!("part 2: {}", part_2());
   Ok(())
 }
 
@@ -41,7 +42,7 @@ fn part_2() -> i32 {
 
 fn get_calories(input: String) -> i32 {
   let mut res = 0;
-  for e in input.split("\n") {
+  for e in input.split('\n') {
     res += e.parse::<i32>().unwrap_or(0);
   }
   res
@@ -75,11 +76,9 @@ mod tests {
       let mut file = File::open("inputs/demo").unwrap();
       let mut contents = String::new();
       file.read_to_string(&mut contents).unwrap();
-      let mut i = 0;
       let expected = vec![6000, 4000, 11000, 24000, 10000];
-      for e in contents.split("\n\n") {
+      for (i, e) in contents.split("\n\n").enumerate() {
         assert_eq!(get_calories(e.to_string()),expected[i]);
-        i += 1;
       }
       
     }

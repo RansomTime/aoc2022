@@ -9,14 +9,14 @@ fn file_to_string(path: &str) -> String {
 }
 
 fn main() -> std::io::Result<()> {
-  print!("part 1: {}\n", part_1());
-  print!("part 2: {}\n", part_2());
+  println!("part 1: {}", part_1());
+  println!("part 2: {}", part_2());
   Ok(())
 }
 
 fn part_1() -> i32 {
   let mut res = 0;
-    for line in file_to_string("inputs/input").split("\n") {
+    for line in file_to_string("inputs/input").split('\n') {
       res += get_score(line);
     }
     res
@@ -24,7 +24,7 @@ fn part_1() -> i32 {
 
 fn part_2() -> i32 {
   let mut res = 0;
-    for line in file_to_string("inputs/input").split("\n") {
+    for line in file_to_string("inputs/input").split('\n') {
       res += get_score_part_2(line);
     }
     res
@@ -48,7 +48,7 @@ impl WLD {
     }
   }
 
-  fn to_score(&self) -> i32 {
+  fn to_score(self) -> i32 {
     match self {
       WLD::Win  => 6,
       WLD::Draw => 3,
@@ -100,7 +100,7 @@ impl RPS {
     }
   }
 
-  fn to_score(&self) -> i32 {
+  fn to_score(self) -> i32 {
     match self {
       RPS::Rock => 1,
       RPS::Paper => 2,
@@ -137,7 +137,7 @@ impl RPS {
 }
 
 fn get_score_part_2(input: &str) -> i32 {
-  let throws: Vec<&str> = input.split(" ").collect();
+  let throws: Vec<&str> = input.split(' ').collect();
   let them = RPS::from_string(throws[0]);
   let me = WLD::from_string(throws[1]);
   let my_throw = me.determine_throw(them);
@@ -147,7 +147,7 @@ fn get_score_part_2(input: &str) -> i32 {
 
 
 fn get_score(input: &str) -> i32 {
-  let throws: Vec<&str> = input.split(" ").collect();
+  let throws: Vec<&str> = input.split(' ').collect();
   let me = RPS::from_string(throws[1]);
   let them = RPS::from_string(throws[0]);
 
@@ -178,7 +178,7 @@ mod tests {
   #[test]
   fn test_demo() {
     let mut res = 0;
-    for line in file_to_string("inputs/demo").split("\n") {
+    for line in file_to_string("inputs/demo").split('\n') {
       res += get_score(line);
     }
     assert_eq!(res, 15);
@@ -187,7 +187,7 @@ mod tests {
   #[test]
   fn test_demo_part_2() {
     let mut res = 0;
-    for line in file_to_string("inputs/demo").split("\n") {
+    for line in file_to_string("inputs/demo").split('\n') {
       res += get_score_part_2(line);
     }
     assert_eq!(res, 12);

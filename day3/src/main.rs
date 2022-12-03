@@ -25,7 +25,7 @@ fn main() {
 
 fn part_1() -> u32 {
   let mut res = 0;
-  for line in file_to_string("inputs/input").split("\n") {
+  for line in file_to_string("inputs/input").split('\n') {
     match Rucksack::from(line).get_shared() {
       Some (shared_item) => res += char_to_score(shared_item),
       None => panic!("no shared item in rucksack: {}",line),
@@ -37,7 +37,7 @@ fn part_1() -> u32 {
 fn part_2() -> u32 {
   let mut res = 0;
   let lines = file_to_string("inputs/input");
-  let mut lines_itr = lines.split("\n").peekable();
+  let mut lines_itr = lines.split('\n').peekable();
   while lines_itr.peek().is_some() { // we know that input's length is 300
     match Rucksack::get_group_badge(
       Rucksack::from(lines_itr.next().unwrap()),
@@ -56,9 +56,9 @@ struct Rucksack {
 }
 
 impl Rucksack {
-  fn from(input: &str) -> Rucksack {
+  fn from(v: &str) -> Rucksack {
     Rucksack {
-      contents: String::from(input),
+      contents: String::from(v),
     }
   }
 
@@ -91,8 +91,6 @@ impl Rucksack {
   }
 }
 
-
-
 #[cfg(test)]
 mod test {
   use crate::*;
@@ -111,7 +109,6 @@ mod test {
   #[test]
   fn split_rucksack() {
     let test = Rucksack::from("vJrwpWtwJgWrhcsFMMfFFhFp");
-    
     assert_eq!(test.get_left(),  String::from("vJrwpWtwJgWr"));
     assert_eq!(test.get_right(), String::from("hcsFMMfFFhFp"));
     
@@ -124,6 +121,7 @@ mod test {
   fn diff_compartments() {
     let test = Rucksack::from("vJrwpWtwJgWrhcsFMMfFFhFp");
     let test2 = Rucksack::from("jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL");
+
     assert_eq!(test.get_shared(),Some('p'));
     assert_eq!(test2.get_shared(),Some('L'));
   }
@@ -131,13 +129,13 @@ mod test {
   #[test]
   fn test_part_1() {
     let mut res = 0;
-    for line in file_to_string("inputs/demo").split("\n") {
+    for line in file_to_string("inputs/demo").split('\n') {
       match Rucksack::from(line).get_shared() {
         Some (shared_item) => res += char_to_score(shared_item),
         None => panic!("no shared item in rucksack: {}",line),
       }
     }
-    assert_eq!(res,157);
+    assert_eq!(res, 157);
   }
   
   #[test]
@@ -161,7 +159,7 @@ mod test {
   fn test_part_2() {
     let mut res = 0;
     let lines = file_to_string("inputs/demo");
-    let mut lines_itr = lines.split("\n").peekable();
+    let mut lines_itr = lines.split('\n').peekable();
     while lines_itr.peek().is_some() {
       match Rucksack::get_group_badge(
         Rucksack::from(lines_itr.next().unwrap()),
