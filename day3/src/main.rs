@@ -37,8 +37,21 @@ fn part_1() -> u32 {
   res
 }
 
-fn part_2() -> i32 {
-  0
+fn part_2() -> u32 {
+  let mut res = 0;
+  let lines = file_to_string("inputs/input");
+  let mut lines_itr = lines.split("\n").peekable();
+  while lines_itr.peek().is_some() { // we know that input's length is 300
+    match Rucksack::get_group_badge(
+      Rucksack::from(lines_itr.next().unwrap()),
+      Rucksack::from(lines_itr.next().unwrap()),
+      Rucksack::from(lines_itr.next().unwrap()),
+    ) {
+      Some (shared_item) => res += char_to_score(shared_item),
+      None => panic!("no shared item in rucksacks"),
+    }
+  }
+  res
 }
 
 struct Rucksack {
@@ -139,6 +152,24 @@ mod test {
       Rucksack::from("CrZsJsPPZsGzwwsLwLmpwMDw")),
       Some('Z')
     );
+  }
+
+  #[test]
+  fn test_part_2() {
+    let mut res = 0;
+    let lines = file_to_string("inputs/demo");
+    let mut lines_itr = lines.split("\n").peekable();
+    while lines_itr.peek().is_some() {
+      match Rucksack::get_group_badge(
+        Rucksack::from(lines_itr.next().unwrap()),
+        Rucksack::from(lines_itr.next().unwrap()),
+        Rucksack::from(lines_itr.next().unwrap()),
+      ) {
+        Some (shared_item) => res += char_to_score(shared_item),
+        None => panic!("no shared item in rucksacks"),
+      }
+    }
+    assert_eq!(res,70);
   }
   
 }
