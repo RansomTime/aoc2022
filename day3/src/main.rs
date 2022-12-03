@@ -12,9 +12,10 @@ fn file_to_string(path: &str) -> String {
 
 
 fn char_to_score(input: char) -> u32 {
+    // convert using ordinal value, panic if not given [A-Za-z]
     match input {
         'a'..='z' => <char as Into<u32>>::into(input) - 96,
-        'A'..='Z' => 27,
+        'A'..='Z' => <char as Into<u32>>::into(input) - 38,
         _ => panic!("char_to_score({}) expected [a-zA-Z]",input),
     }
 }
@@ -45,5 +46,10 @@ mod test {
         assert_eq!(char_to_score('a'), 1);
         assert_eq!(char_to_score('b'), 2);
         assert_eq!(char_to_score('A'), 27);
+        assert_eq!(char_to_score('Z'), 52);
+        assert_eq!(char_to_score('P'), 42);
+        assert_eq!(char_to_score('t'), 20);
     }
+
+    
 }
