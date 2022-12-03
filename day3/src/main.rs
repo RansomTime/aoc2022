@@ -1,7 +1,6 @@
 use std::fs::File;
 use std::io::prelude::*;
 
-#[allow(dead_code)]
 fn file_to_string(path: &str) -> String {
   let mut file = File::open(path).unwrap();
   let mut contents = String::new();
