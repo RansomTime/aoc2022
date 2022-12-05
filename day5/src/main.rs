@@ -11,14 +11,13 @@ fn parse_input_stacks() -> Vec<Vec<char>>  {
   for line in input.split('\n').rev() {
     let mut i = 0;
     let mut chars = line.chars();
+    chars.next();
     while i <= 8 {
-      if chars.next().unwrap() == '[' {
-        let next = chars.next().unwrap();
+      let next = chars.next().unwrap();
+      if let 'A'..='Z' = next {
         res[i].push(next);
-        for _ in 0..2 { chars.next(); } // skip to next
-      } else {
-        for _ in 0..3 { chars.next(); } 
       }
+      for _ in 0..3 { chars.next(); } // fast-forward to next input letter
       i += 1;
     }
   }
