@@ -1,13 +1,12 @@
 use std::fs::File;
 use std::io::prelude::*;
-use std::collections::VecDeque;
 use regex::Regex;
 #[macro_use]
 extern crate lazy_static;
 
-fn parse_input_stacks() -> VecDeque<VecDeque<char>>  {
+fn parse_input_stacks() -> Vec<Vec<char>>  {
   let input = file_to_string("inputs/input_stacks");
-  let mut res = VecDeque::from([VecDeque::from([]), VecDeque::from([]),VecDeque::from([]),VecDeque::from([]),VecDeque::from([]),VecDeque::from([]),VecDeque::from([]),VecDeque::from([]),VecDeque::from([])]);
+  let mut res = vec![Vec::new(); 9];
   
   for line in input.split('\n').rev() {
     let mut i = 0;
@@ -15,7 +14,7 @@ fn parse_input_stacks() -> VecDeque<VecDeque<char>>  {
     while i <= 8 {
       if chars.next().unwrap() == '[' {
         let next = chars.next().unwrap();
-        res[i].push_back(next);
+        res[i].push(next);
         for _ in 0..2 { chars.next(); } // skip to next
       } else {
         for _ in 0..3 { chars.next(); } 
@@ -44,11 +43,11 @@ fn part_1() -> String {
   for line in file_to_string("inputs/input_inst").split('\n') {
     let ins = Instruction::from_str(line);
     for _ in 0..ins.num {
-      let to_push = stacks[ins.src].pop_back().unwrap();
-      stacks[ins.dst].push_back(to_push);
+      let to_push = stacks[ins.src].pop().unwrap();
+      stacks[ins.dst].push(to_push);
     }
   }
-  stacks.into_iter().map(|mut stack| stack.pop_back().unwrap()).collect()
+  stacks.into_iter().map(|mut stack| stack.pop().unwrap()).collect()
   
 }
 
@@ -56,15 +55,15 @@ fn part_2() -> String {
   let mut stacks = parse_input_stacks();
   for line in file_to_string("inputs/input_inst").split('\n') {
     let ins = Instruction::from_str(line);
-    let mut to_push = VecDeque::from([]);
+    let mut to_push = Vec::new();
     for _ in 0..ins.num {
-      to_push.push_back(stacks[ins.src].pop_back().unwrap());
+      to_push.push(stacks[ins.src].pop().unwrap());
     }
     for _ in 0..ins.num {
-      stacks[ins.dst].push_back(to_push.pop_back().unwrap());
+      stacks[ins.dst].push(to_push.pop().unwrap());
     }
   }
-  stacks.into_iter().map(|mut stack| stack.pop_back().unwrap()).collect()
+  stacks.into_iter().map(|mut stack| stack.pop().unwrap()).collect()
 }
 
 #[derive(Debug, PartialEq)]
@@ -107,10 +106,10 @@ mod test {
     }, res);
   }
   
-  fn get_demo() -> VecDeque<VecDeque<char>>  {
-    VecDeque::from([VecDeque::from(['Z','N']),
-    VecDeque::from(['M','C','D']),
-    VecDeque::from(['P']),])
+  fn get_demo() -> Vec<Vec<char>>  {
+    Vec::from([Vec::from(['Z','N']),
+    Vec::from(['M','C','D']),
+    Vec::from(['P']),])
   }
   
   #[test]
@@ -119,18 +118,18 @@ mod test {
     for line in file_to_string("inputs/demo").split('\n') {
       let ins = Instruction::from_str(line);
       for _ in 0..ins.num {
-        let to_push = stacks[ins.src].pop_back().unwrap();
-        stacks[ins.dst].push_back(to_push);
+        let to_push = stacks[ins.src].pop().unwrap();
+        stacks[ins.dst].push(to_push);
       }
     }
-    let res:String = stacks.into_iter().map(|mut stack| stack.pop_back().unwrap()).collect();
+    let res:String = stacks.into_iter().map(|mut stack| stack.pop().unwrap()).collect();
     assert_eq!(res, String::from("CMZ"));
   }
   
   #[test]
   fn test_parse_input() {
     let stacks = parse_input_stacks();
-    let res:String = stacks.into_iter().map(|mut stack| stack.pop_back().unwrap()).collect();
+    let res:String = stacks.into_iter().map(|mut stack| stack.pop().unwrap()).collect();
     assert_eq!(res, String::from("SRSJBTQRT"));
   }
   
@@ -139,15 +138,15 @@ mod test {
     let mut stacks = get_demo();
     for line in file_to_string("inputs/demo").split('\n') {
       let ins = Instruction::from_str(line);
-      let mut to_push = VecDeque::from([]);
+      let mut to_push = Vec::new();
       for _ in 0..ins.num {
-        to_push.push_back(stacks[ins.src].pop_back().unwrap());
+        to_push.push(stacks[ins.src].pop().unwrap());
       }
       for _ in 0..ins.num {
-        stacks[ins.dst].push_back(to_push.pop_back().unwrap());
+        stacks[ins.dst].push(to_push.pop().unwrap());
       }
     }
-    let res:String = stacks.into_iter().map(|mut stack| stack.pop_back().unwrap()).collect();
+    let res:String = stacks.into_iter().map(|mut stack| stack.pop().unwrap()).collect();
     assert_eq!(res, String::from("MCD"));
   }
 }
