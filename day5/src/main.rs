@@ -5,7 +5,6 @@ use regex::Regex;
 #[macro_use]
 extern crate lazy_static;
 
-
 fn parse_input_stacks() -> VecDeque<VecDeque<char>>  {
   let input = file_to_string("inputs/input_stacks");
   let mut res = VecDeque::from([VecDeque::from([]), VecDeque::from([]),VecDeque::from([]),VecDeque::from([]),VecDeque::from([]),VecDeque::from([]),VecDeque::from([]),VecDeque::from([]),VecDeque::from([])]);
@@ -97,11 +96,6 @@ impl Instruction {
 #[cfg(test)]
 mod test {
   use crate::*;
-  
-  #[test]
-  fn dummy_test() {
-    assert_eq!("", "");
-  }
   
   #[test]
   fn test_parse() {
