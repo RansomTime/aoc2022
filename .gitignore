@@ -2,3 +2,5 @@
 Cargo.lock
 target/
 input
+day5/inputs/input_stacks
+day5/inputs/input_inst
