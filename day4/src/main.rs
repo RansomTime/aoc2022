@@ -86,10 +86,15 @@ mod test {
   #[test]
   fn test_full_overlap() {
     assert!( Section{start:2, end:8}.does_fully_overlap(Section{start:3, end:7}));
-    assert!(!Section{start:2, end:8}.does_fully_overlap(Section{start:3, end:9}));
     assert!( Section{start:6, end:6}.does_fully_overlap(Section{start:4, end:6}));
-    assert!(!Section{start:2, end:3}.does_fully_overlap(Section{start:4, end:5}));
     assert!(Section{start:2,end:99}.does_fully_overlap(Section{start: 2, end:98}));
+  }
+
+  #[test]
+  fn test_no_full_overlap() {
+    assert!(!Section{start:2, end:8}.does_fully_overlap(Section{start:3, end:9}));
+    assert!(!Section{start:2, end:3}.does_fully_overlap(Section{start:4, end:5}));
+
   }
   
   #[test]

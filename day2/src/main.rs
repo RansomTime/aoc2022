@@ -15,20 +15,11 @@ fn main() -> std::io::Result<()> {
 }
 
 fn part_1() -> i32 {
-  let mut res = 0;
-    for line in file_to_string("inputs/input").split('\n') {
-      res += get_score(line);
-    }
-    res
+  file_to_string("inputs/input").split('\n').map(get_score).sum()
 }
 
 fn part_2() -> i32 {
-  let mut res = 0;
-    for line in file_to_string("inputs/input").split('\n') {
-      res += get_score_part_2(line);
-    }
-    res
-
+  file_to_string("inputs/input").split('\n').map(get_score_part_2).sum() 
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Ord, PartialOrd, Hash)]
@@ -177,19 +168,13 @@ mod tests {
 
   #[test]
   fn test_demo() {
-    let mut res = 0;
-    for line in file_to_string("inputs/demo").split('\n') {
-      res += get_score(line);
-    }
+    let res: i32 = file_to_string("inputs/demo").split('\n').map(get_score).sum();
     assert_eq!(res, 15);
   }
 
   #[test]
   fn test_demo_part_2() {
-    let mut res = 0;
-    for line in file_to_string("inputs/demo").split('\n') {
-      res += get_score_part_2(line);
-    }
+    let  res: i32 = file_to_string("inputs/demo").split('\n').map(get_score_part_2).sum(); 
     assert_eq!(res, 12);
   }
   
