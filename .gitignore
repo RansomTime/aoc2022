@@ -1,6 +1,6 @@
 .vscode/
 Cargo.lock
 target/
-inputs/input
-inputs/input_inst
-input/input_stacks
+input
+input_inst
+input_stacks
