@@ -1,9 +1,7 @@
 use std::collections::VecDeque;
 use itertools::Itertools;
 
-
 const INPUT: &str = include_str!("../inputs/input");
-
 
 fn main() {
     println!("part 1: {}", part_1());
@@ -22,10 +20,9 @@ fn get_first_packet(input: &str, len: usize) -> Option<usize> {
     let mut seen = VecDeque::from([]);
     for (i, e) in input.chars().enumerate() {
         seen.push_back(e);
-        
         // expensive check but not worth optimising
         if seen.clone().into_iter().unique().count() == len { 
-            return Some(i+1);
+            return Some(i + 1);
         }
         while seen.len() >= len { //shrink to 14
             seen.pop_front();
@@ -34,8 +31,6 @@ fn get_first_packet(input: &str, len: usize) -> Option<usize> {
     None
 }
 
-
-
 #[cfg(test)]
 mod test {
     use crate::*;
@@ -43,7 +38,6 @@ mod test {
     #[test]
     fn test_demo_1() {
         assert_eq!(get_first_packet("bvwbjplbgvbhsrlpgdmjqwftvncz",4).unwrap(),5);
-        
     }
     #[test]
     fn test_demo_2() {
