@@ -24,7 +24,7 @@ fn get_first_packet(input: &str, len: usize) -> Option<usize> {
         if seen.clone().into_iter().unique().count() == len { 
             return Some(i + 1);
         }
-        while seen.len() >= len { //shrink to 14
+        while seen.len() >= len { //shrink to len
             seen.pop_front();
         }
     }
