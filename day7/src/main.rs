@@ -9,10 +9,10 @@ fn main() {
     println!("part 2: {}", part_2());
 }
 
-fn part_1() -> i32 {
+fn parse_input(input: &str) -> Rc<RefCell<DirectoryTree>> {
     let root = Rc::from(RefCell::from(DirectoryTree::new_root()));
     let mut pwd = Rc::clone(&root);
-    for line in INPUT.split('\n') {
+    for line in input.split('\n') {
         if line.starts_with("$ cd /") {
             pwd = Rc::clone(&root);
             continue;
@@ -39,7 +39,7 @@ fn part_1() -> i32 {
                 }                     
             }
             if canary {
-                panic!("squark");
+                panic!("directory {search} not found.");
             }
             continue;
         }
@@ -52,11 +52,13 @@ fn part_1() -> i32 {
         // else
         let mut file = line.split(' ');
         let size:i32 = file.next().unwrap().parse().unwrap();
-        let name = file.next().unwrap();
-        pwd.borrow_mut().add_file(name, size);                
+        pwd.borrow_mut().add_file(size);                
     }
-    //return root.borrow().size_of_children();
-    //assert_eq!(48381165,root.borrow().size_of_children());
+    root
+}
+
+fn part_1() -> i32 {
+    let root = parse_input(INPUT);
     let mut res = 0;
     let kids = root.borrow().better_size_of_children();
     for e in kids {
@@ -65,58 +67,12 @@ fn part_1() -> i32 {
         }
     }
     res
-    
 }
 
 fn part_2() -> i32 {
-    let root = Rc::from(RefCell::from(DirectoryTree::new_root()));
-    let mut pwd = Rc::clone(&root);
-    for line in INPUT.split('\n') {
-        if line.starts_with("$ cd /") {
-            pwd = Rc::clone(&root);
-            continue;
-        }
-        if line.starts_with("$ ls") {
-            continue;
-        }
-        if line.starts_with("$ cd ..") {
-            let next = Rc::clone(&pwd.borrow_mut().get_parent());
-            pwd = next;
-            continue;
-        }
-        if line.starts_with("$ cd ") {
-            let search = line.strip_prefix("$ cd ").unwrap();
-            let pwd_ = Rc::clone(&pwd);
-            // telling rust softly that I love it
-            // and I'm not going to ruin it's nicely allocated memory
-            let mut canary = true;
-            for child in &pwd_.borrow().children {
-                if child.borrow().name == *search {
-                    pwd = Rc::clone(child);
-                    canary = false;
-                    break;
-                }                     
-            }
-            if canary {
-                panic!("squark");
-            }
-            continue;
-        }
-        if line.starts_with("dir ") {
-            let new_name = line.strip_prefix("dir ").unwrap();
-            let next = Rc::clone(&pwd);
-            pwd.borrow_mut().deref_mut().add_dir(new_name, next);
-            continue;
-        }
-        // else
-        let mut file = line.split(' ');
-        let size:i32 = file.next().unwrap().parse().unwrap();
-        let name = file.next().unwrap();
-        pwd.borrow_mut().add_file(name, size);                
-    }
+    let root = parse_input(INPUT);
     let unused_space = 70000000-root.borrow().size_of_children();
     let needed_space = 30000000-unused_space;
-    //assert_eq!(48381165,root.borrow().size_of_children());
 
     let kids = root.borrow().better_size_of_children();
     let mut res = i32::MAX;
@@ -132,7 +88,7 @@ struct DirectoryTree {
     parent: Option<Rc<RefCell<DirectoryTree>>>,
     name: String,
     children: Vec<Rc<RefCell<DirectoryTree>>>,
-    files: Vec<DirectoryFile>
+    files: Vec<i32>
 }
 
 impl DirectoryTree {
@@ -152,11 +108,8 @@ impl DirectoryTree {
         }
     }
 
-    fn add_file(&mut self,name: &str, size: i32) {
-        self.files.push( DirectoryFile{
-            name: String::from(name),
-            size
-        });
+    fn add_file(&mut self, size: i32) {
+        self.files.push(size);
     }
 
     fn add_dir(&mut self, name: &str, parent: Rc<RefCell<DirectoryTree>>) {
@@ -173,7 +126,7 @@ impl DirectoryTree {
     fn size_of_children(&self) -> i32 {
         let mut sum = 0;
         for file in &self.files {
-            sum += file.size;
+            sum += file;
         }
         for child in &self.children {
             sum += child.borrow().size_of_children();
@@ -190,12 +143,6 @@ impl DirectoryTree {
         res
 
     }
-}
-
-#[derive(Debug)]
-struct DirectoryFile {
-    name: String, // never used lol
-    size: i32,
 }
 
 #[cfg(test)]
@@ -215,8 +162,8 @@ mod test {
     #[test]
     fn test_add_file() {
         let mut test = DirectoryTree::new_root();
-        test.add_file("a", 23);
-        test.add_file("b", 18);
+        test.add_file(23);
+        test.add_file(18);
 
         assert_eq!(test.size_of_children(),41);
     }
@@ -237,7 +184,7 @@ mod test {
         let test = Rc::from(RefCell::from(DirectoryTree::new_root()));
         test.borrow_mut().add_dir("ab/",Rc::clone(&test));
         test.borrow_mut().add_dir("cd/",Rc::clone(&test));
-        test.borrow_mut().add_file("e",10);
+        test.borrow_mut().add_file(10);
         assert_eq!(test.borrow().size_of_children(),10);
     }
 
@@ -246,56 +193,17 @@ mod test {
         let root = Rc::from(RefCell::from(DirectoryTree::new_root()));
         root.borrow_mut().add_dir("ab/",Rc::clone(&root));
         root.borrow_mut().add_dir("cd/",Rc::clone(&root));
-        root.borrow_mut().add_file("e",10);
-        root.borrow().children[0].borrow_mut().deref_mut().add_file("f", 23);
+        root.borrow_mut().add_file(10);
+        root.borrow().children[0].borrow_mut().deref_mut().add_file(23);
         assert_eq!(root.borrow().size_of_children(),33);
     }
 
     
     #[test]
     fn test_part_1() {
-        let root = Rc::from(RefCell::from(DirectoryTree::new_root()));
-        let mut pwd = Rc::clone(&root);
         let input: &str = include_str!("../inputs/demo");
-        for line in input.split('\n') {
-            if line.starts_with("$ cd /") {
-                pwd = Rc::clone(&root);
-                continue;
-            }
-            if line.starts_with("$ ls") {
-                continue;
-            }
-            if line.starts_with("$ cd ..") {
-                let next = Rc::clone(&pwd.borrow_mut().get_parent());
-                pwd = next;
-                continue;
-            }
-            if line.starts_with("$ cd ") {
-                let search = line.strip_prefix("$ cd ").unwrap();
-                println!("search: '{search}'");
-                let pwd_ = Rc::clone(&pwd);
-                // telling rust softly that I love it
-                // and I'm not going to ruin it's nicely allocated memory
-                for child in &pwd_.borrow().children {
-                    if child.borrow().name == *search {
-                        pwd = Rc::clone(child);
-                        break;
-                    }                     
-                }
-                continue;
-            }
-            if line.starts_with("dir ") {
-                let new_name = line.strip_prefix("dir ").unwrap();
-                let next = Rc::clone(&pwd);
-                pwd.borrow_mut().deref_mut().add_dir(new_name, next);
-                continue;
-            }
-            // else
-            let mut file = line.split(' ');
-            let size:i32 = file.next().unwrap().parse().unwrap();
-            let name = file.next().unwrap();
-            pwd.borrow_mut().add_file(name, size);                
-        }
+        let root = parse_input(input);
+
         assert_eq!(48381165,root.borrow().size_of_children());
         let mut res = 0;
         let kids = root.borrow().better_size_of_children();
