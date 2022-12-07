@@ -71,8 +71,8 @@ fn part_1() -> i32 {
 
 fn part_2() -> i32 {
     let root = parse_input(INPUT);
-    let unused_space = 70000000-root.borrow().size_of_children();
-    let needed_space = 30000000-unused_space;
+    let unused_space = 70_000_000-root.borrow().size_of_children();
+    let needed_space = 30_000_000-unused_space;
 
     let kids = root.borrow().better_size_of_children();
     let mut res = i32::MAX;
@@ -204,7 +204,7 @@ mod test {
         let input: &str = include_str!("../inputs/demo");
         let root = parse_input(input);
 
-        assert_eq!(48381165,root.borrow().size_of_children());
+        assert_eq!(48_381_165,root.borrow().size_of_children());
         let mut res = 0;
         let kids = root.borrow().better_size_of_children();
         for e in kids {
