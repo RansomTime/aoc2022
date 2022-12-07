@@ -20,12 +20,18 @@ fn part_2() -> u32 {
 struct DirectoryTree {
     parent: Option<Rc<RefCell<DirectoryTree>>>,
     name: String,
-    children: Vec<Rc<RefCell<DirectoryItem>>>
+    children: Vec<Rc<RefCell<DirectoryTree>>>,
+    files: Vec<DirectoryFile>
 }
 
 impl DirectoryTree {
     fn new_root() -> DirectoryTree{
-        DirectoryTree { parent: None, name: String::from("/"), children: vec![] }
+        DirectoryTree {
+            parent: None,
+            name: String::from("/"),
+            children: vec![],
+            files: vec![],    
+        }
     }
 
     fn get_parent(&self) -> Rc<RefCell<DirectoryTree>> {
@@ -36,32 +42,30 @@ impl DirectoryTree {
     }
 
     fn add_file(&mut self,name: &str, size: i32) {
-        let file = Rc::new(RefCell::new(
-            DirectoryItem::Item(DirectoryFile{
-                name: String::from(name),
-                size
-        })));
-        self.children.push(file);
+        self.files.push( DirectoryFile{
+            name: String::from(name),
+            size
+        });
     }
 
     fn add_dir(&mut self, name: &str, parent: Rc<RefCell<DirectoryTree>>) {
         let dir = Rc::new(RefCell::new(
-            DirectoryItem::Directory(DirectoryTree{
+            DirectoryTree{
                 parent: Some(parent),
                 name: String::from(name),
                 children: Vec::new(),
-            })));
+                files: Vec::new(),
+            }));
         self.children.push(dir);
     }
 
     fn size_of_children(&self) -> i32 {
         let mut sum = 0;
-        for file in &self.children {
-            let b = file.borrow();
-            match b.deref() {
-                DirectoryItem::Item(e) => sum+=e.size,
-                DirectoryItem::Directory(dir) => sum+=dir.size_of_children(),
-            }
+        for file in &self.files {
+            sum += file.size;
+        }
+        for child in &self.children {
+            sum += child.borrow().size_of_children();
         }
         sum
     }
@@ -128,12 +132,7 @@ mod test {
         root.borrow_mut().add_dir("ab/",Rc::clone(&root));
         root.borrow_mut().add_dir("cd/",Rc::clone(&root));
         root.borrow_mut().add_file("e",10);
-        match root.borrow().children[0].borrow_mut().deref_mut() {
-            DirectoryItem::Directory(e) => e.add_file("f", 23),
-            _ => panic!(),
-        }
-        
-        //ab;
+        root.borrow().children[0].borrow_mut().deref_mut().add_file("f", 23);
         assert_eq!(root.borrow().size_of_children(),33);
     }
 
