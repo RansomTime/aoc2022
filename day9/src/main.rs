@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::HashSet;
 
 const INPUT: &str = include_str!("../inputs/input");
 
@@ -14,7 +14,7 @@ fn part_1() -> usize {
         let n:usize = line.split(' ').nth(1).unwrap().parse().unwrap();
         pos.head_move(dir, n);
     }
-    pos.tail_visited.keys().count()
+    pos.tail_visited.len()
 }
 
 fn part_2() -> usize {
@@ -25,19 +25,19 @@ fn part_2() -> usize {
         let n:usize = line.split(' ').nth(1).unwrap().parse().unwrap();
         pos.head_move(dir, n);
     }
-    pos.tail_visited.keys().count()
+    pos.tail_visited.len()
 }
 
 struct Position {
     //head: Vec<i32>,
     knots: Vec<Vec<i32>>,
-    tail_visited: HashMap<(i32, i32), bool>,
+    tail_visited: HashSet<(i32, i32)>,
 }
 
 impl Position {
     fn init(knots: usize) -> Position {
-        let mut tail_visited = HashMap::new();
-        tail_visited.insert((0,0), true);
+        let mut tail_visited = HashSet::new();
+        tail_visited.insert((0,0));
         Position {knots: vec![vec![0;2];knots], tail_visited }
     }
 
@@ -66,19 +66,12 @@ impl Position {
         if diff[0].abs() < 2 && diff[1].abs() < 2 {
             return;
         }
-        for e in diff.iter_mut() { // diff -> direction vector
-            if *e == 2 {
-                *e = 1;
-            }
-            if *e == -2 {
-                *e = -1;
-            }
+        for (i,e) in diff.iter_mut().enumerate() { 
+            tail[i] += e.signum();// diff -> direction vector
         }
-        tail[0] += diff[0];
-        tail[1] += diff[1];
         let max_tails = self.knots.len() - 1;
         if idx == max_tails {
-            self.tail_visited.insert((self.knots[max_tails][0],self.knots[max_tails][1]),true);
+            self.tail_visited.insert((self.knots[max_tails][0],self.knots[max_tails][1]));
         } else {
             self.tail_move(idx + 1); // recursion!
         }
@@ -92,14 +85,13 @@ mod test {
     fn test_tail_move() {
         let mut test = Position::init(2);
         test.knots[0] = vec![2,0];
-        
         assert_eq!(test.knots[1],[0,0]);
-        assert!(test.tail_visited.contains_key(&(0,0)));
-        assert!(!test.tail_visited.contains_key(&(1,0)));
+        assert!(test.tail_visited.contains(&(0,0)));
+        assert!(!test.tail_visited.contains(&(1,0)));
 
         test.tail_move(1);
         assert_eq!(test.knots[1],[1,0]);
-        assert!(test.tail_visited.contains_key(&(1,0)));
+        assert!(test.tail_visited.contains(&(1,0)));
     }
 
     #[test]
@@ -111,6 +103,6 @@ mod test {
             let n:usize = line.split(' ').nth(1).unwrap().parse().unwrap();
             pos.head_move(dir, n);
         }
-        assert_eq!(pos.tail_visited.keys().count(),13);
+        assert_eq!(pos.tail_visited.len(),13);
     }
 }
