@@ -15,7 +15,6 @@ fn part_1() -> usize {
         pos.head_move(dir, n);
     }
     pos.tail_visited.keys().count()
-
 }
 
 fn part_2() -> usize {
@@ -55,8 +54,8 @@ impl Position {
             self.knots[0][1] += dir_v[1];
             self.tail_move(1);
         }
-        
     }
+
     fn tail_move(&mut self, idx: usize) {
         let prev = self.knots[idx - 1].clone();
         let tail = &mut self.knots[idx];
@@ -83,7 +82,6 @@ impl Position {
         } else {
             self.tail_move(idx + 1); // recursion!
         }
-        
     }
 }
 
@@ -94,6 +92,7 @@ mod test {
     fn test_tail_move() {
         let mut test = Position::init(2);
         test.knots[0] = vec![2,0];
+        
         assert_eq!(test.knots[1],[0,0]);
         assert!(test.tail_visited.contains_key(&(0,0)));
         assert!(!test.tail_visited.contains_key(&(1,0)));
