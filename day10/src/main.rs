@@ -29,23 +29,18 @@ impl Cpu {
 }
 
 fn part_1() -> i32 {
-   //let mut res = 0;
-   let mut cpu = Cpu::new();
-   
+   let mut cpu = Cpu::new(); 
    for line in INPUT.split('\n') {
-      if line == "noop" {
-         cpu.tick();
-      }
-      else {
-         cpu.tick();
-         cpu.tick();
-         cpu.x += line.strip_prefix("addx ").unwrap().parse::<i32>().unwrap();     
-      }
       if cpu.ic > 220 {
          break;
       }
-   }
-   
+      cpu.tick();
+      if line != "noop" {
+         cpu.tick();
+         cpu.x += line.strip_prefix("addx ").unwrap().parse::<i32>().unwrap();
+      }
+
+   }   
    cpu.str_sum
 }
 
@@ -62,24 +57,22 @@ fn part_2() -> String {
    let mut crt = Vec::with_capacity(240);
    
    for line in INPUT.split('\n') {
-      if line == "noop" {
+      crt.push(crt_draw(&cpu));
+      cpu.tick();
+
+      if line != "noop" {
          crt.push(crt_draw(&cpu));
          cpu.tick();
+         cpu.x += line.strip_prefix("addx ").unwrap().parse::<i32>().unwrap();
       }
-      else {
-         crt.push(crt_draw(&cpu));
-         cpu.tick();
-         crt.push(crt_draw(&cpu));
-         cpu.tick();
-         cpu.x += line.strip_prefix("addx ").unwrap().parse::<i32>().unwrap();    
-      }
+      
    }
    let mut res:Vec<char> = Vec::new();
-   for (i, o) in crt.into_iter().enumerate() {
+   for (i, pixel) in crt.into_iter().enumerate() {
       if i % 40 == 0 {
          res.push('\n');
       }
-      match o {
+      match pixel {
          true => res.push('#'),
          false => res.push(' ')
       }
@@ -96,20 +89,17 @@ mod test {
       let mut cpu = Cpu::new();
       
       for line in include_str!("../inputs/demo").split('\n') {
-         println!("start of cycle {}, {line}", cpu.ic);
-         if line == "noop" {
-            cpu.tick();
-         }
-         else {
-            cpu.tick();
-            println!("start of cycle {}, {line}", cpu.ic);
-            cpu.tick();
-            cpu.x += line.strip_prefix("addx ").unwrap().parse::<i32>().unwrap();   
-            println!("end of cycle {}, X now has value: {}", cpu.ic - 1, cpu.x);  
-         }
-         if cpu.ic == 220 {
+         if cpu.ic > 220 {
             break;
          }
+         println!("start of cycle {}, {line}", cpu.ic);
+         cpu.tick();
+         if line != "noop" {
+            println!("start of cycle {}, {line}", cpu.ic);
+            cpu.tick();
+            cpu.x += line.strip_prefix("addx ").unwrap().parse::<i32>().unwrap(); 
+            println!("end of cycle {}, X now has value: {}", cpu.ic - 1, cpu.x);  
+         }        
       }
       assert_eq!(cpu.str_sum, 13140);
    }
@@ -121,36 +111,31 @@ mod test {
       
       for line in include_str!("../inputs/demo").split('\n') {
          println!("start of cycle {}: {}", cpu.ic, line);
-         if line == "noop" {
+         println!("CRT draws pixel in position {}",crt.len());
+         crt.push(crt_draw(&cpu));
+         cpu.tick();
+
+         if line != "noop" {
             println!("CRT draws pixel in position {}",crt.len());
             crt.push(crt_draw(&cpu));
             cpu.tick();
-         }
-         else {
-            println!("CRT draws pixel in position {}",crt.len());
-            crt.push(crt_draw(&cpu));
-            cpu.tick();
-            println!("start of cycle {}: {}", cpu.ic, line);
-            println!("CRT draws pixel in position {}",crt.len());
-            crt.push(crt_draw(&cpu));
-            cpu.tick();
-            cpu.x += line.strip_prefix("addx ").unwrap().parse::<i32>().unwrap();    
+            cpu.x += line.strip_prefix("addx ").unwrap().parse::<i32>().unwrap();
             println!("End of cycle {}: finish executing {} (Register X is now {})",cpu.ic, line, cpu.x);
          }
       }
+
       let mut res:Vec<char> = Vec::new();
-      for (i, o) in crt.into_iter().enumerate() {
+      for (i, pixel) in crt.into_iter().enumerate() {
          if i % 40 == 0 && i != 0 {
             res.push('\n');
          }
-         match o {
+         match pixel {
             true => res.push('#'),
             false => res.push('.')
          }
       }
       
       let res_str: String = res.into_iter().collect();
-      
       println!("{res_str}");
       assert_eq!(res_str,String::from(include_str!("../inputs/correct_image")));
    }
