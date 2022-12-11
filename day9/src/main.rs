@@ -59,14 +59,14 @@ impl Position {
     fn tail_move(&mut self, idx: usize) {
         let prev = self.knots[idx - 1].clone();
         let tail = &mut self.knots[idx];
-        let mut diff = vec![
+        let diff = vec![
             prev[0] - tail[0],
             prev[1] - tail[1]
         ];
         if diff[0].abs() < 2 && diff[1].abs() < 2 {
             return;
         }
-        for (i,e) in diff.iter_mut().enumerate() { 
+        for (i,e) in diff.into_iter().enumerate() { 
             tail[i] += e.signum();// diff -> direction vector
         }
         let max_tails = self.knots.len() - 1;
