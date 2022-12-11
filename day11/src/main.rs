@@ -6,7 +6,7 @@ fn main() {
     println!("part 2: {}", part_2());
 }
 
-fn part_1() -> i64 {
+fn part_1() -> u32 {
     let mut monkeys = vec![];
         for monkey in INPUT.split("\n\n") {
             monkeys.push(Monkey::from(monkey));
@@ -24,7 +24,7 @@ fn part_1() -> i64 {
         monkeys[0].inspected * monkeys[1].inspected
 }
 
-fn part_2() -> i64 {
+fn part_2() -> u32 {
     let mut monkeys = vec![];
     for monkey in INPUT.split("\n\n") {
         monkeys.push(Monkey::from(monkey));
@@ -49,18 +49,18 @@ fn part_2() -> i64 {
 
 #[derive(Debug, PartialEq, Eq)]
 enum Operation {
-    Add(i64),
-    Mult(i64),
+    Add(u32),
+    Mult(u32),
     MultSelf,
 }
 
 struct Monkey {
-    items: VecDeque<i64>,
+    items: VecDeque<u32>,
     op: Operation,
-    test: i64,
+    test: u32,
     throw_if_true: usize,
     throw_if_false: usize,
-    inspected: i64,
+    inspected: u32,
 }
 
 impl Monkey {
@@ -70,7 +70,7 @@ impl Monkey {
         let items_str = lines.next().unwrap()
             .strip_prefix("  Starting items: ").unwrap().split(", ");
 
-        let mut items: VecDeque<i64> = VecDeque::new();
+        let mut items: VecDeque<u32> = VecDeque::new();
         for item in items_str{
             items.push_back(item.parse().unwrap());
         }
@@ -90,7 +90,7 @@ impl Monkey {
             _ => unreachable!(),
         };
 
-        let test:i64 = lines.next().unwrap()
+        let test:u32 = lines.next().unwrap()
             .strip_prefix("  Test: divisible by ").unwrap()
             .parse().unwrap();
         
@@ -111,7 +111,7 @@ impl Monkey {
         }
     }
 
-    fn inspect_and_throw(&mut self, divide_by_3: bool) -> (usize, i64) {
+    fn inspect_and_throw(&mut self, divide_by_3: bool) -> (usize, u32) {
         // returns (target,worry_level)
         self.inspected += 1;
         let mut item = self.items.pop_front().unwrap();
